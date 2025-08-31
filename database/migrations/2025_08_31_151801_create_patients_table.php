@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -13,17 +13,17 @@ return new class extends Migration
     {
         Schema::create('patients', function (Blueprint $table) {
             $table->id();
-            $table->string('nom');
-            $table->string('prenom');
-            $table->date('date_naissance');
+            $table->string('last_name');
+            $table->string('first_name');
+            $table->date('birth_date');
             $table->string('email')->unique();
-            $table->string('telephone');
-            $table->text('antecedents')->nullable();
+            $table->string('phone');
+            $table->text('medical_history')->nullable();
             $table->text('allergies')->nullable();
-            $table->string('medecin_traitant')->nullable();
-            $table->text('traitements_actuels')->nullable();
-            $table->enum('severite_asthme', ['leger', 'modere', 'severe'])->default('modere');
-            $table->text('notes_medicales')->nullable();
+            $table->string('attending_doctor')->nullable();
+            $table->text('current_treatments')->nullable();
+            $table->enum('asthma_severity', ['mild', 'moderate', 'severe'])->default('moderate');
+            $table->text('medical_notes')->nullable();
             $table->timestamps();
         });
     }

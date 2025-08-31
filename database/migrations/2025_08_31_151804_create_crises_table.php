@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -14,15 +14,14 @@ return new class extends Migration
         Schema::create('crises', function (Blueprint $table) {
             $table->id();
             $table->foreignId('patient_id')->constrained()->onDelete('cascade');
-            $table->datetime('debut_crise');
-            $table->datetime('fin_crise')->nullable();
-            $table->enum('intensite', ['leger', 'modere', 'severe'])->default('modere');
-            $table->text('symptomes');
-            $table->text('declencheurs')->nullable();
-            $table->text('traitements_utilises')->nullable();
-            $table->boolean('hospitalisation')->default(false);
+            $table->datetime('start_date');
+            $table->datetime('end_date')->nullable();
+            $table->enum('intensity', ['mild', 'moderate', 'severe'])->default('moderate');
+            $table->text('triggers')->nullable();
+            $table->text('treatments_used')->nullable();
+            $table->boolean('hospitalization')->default(false);
             $table->text('notes')->nullable();
-            $table->enum('statut', ['en_cours', 'terminee', 'annulee'])->default('en_cours');
+            $table->enum('status', ['ongoing', 'completed', 'cancelled'])->default('ongoing');
             $table->timestamps();
         });
     }

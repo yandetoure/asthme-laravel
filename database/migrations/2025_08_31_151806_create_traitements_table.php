@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('traitements', function (Blueprint $table) {
+        Schema::create('treatments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('patient_id')->constrained()->onDelete('cascade');
-            $table->foreignId('medicament_id')->constrained()->onDelete('cascade');
+            $table->foreignId('medication_id')->constrained()->onDelete('cascade');
             $table->string('dosage');
-            $table->string('frequence');
-            $table->enum('type', ['preventif', 'curatif', 'rescue'])->default('preventif');
-            $table->date('date_debut');
-            $table->date('date_fin')->nullable();
-            $table->boolean('actif')->default(true);
-            $table->text('effets_secondaires')->nullable();
+            $table->string('frequency');
+            $table->enum('type', ['preventive', 'curative', 'rescue'])->default('preventive');
+            $table->date('start_date');
+            $table->date('end_date')->nullable();
+            $table->boolean('active')->default(true);
+            $table->text('side_effects')->nullable();
             $table->text('instructions')->nullable();
             $table->timestamps();
         });
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('traitements');
+        Schema::dropIfExists('treatments');
     }
 };

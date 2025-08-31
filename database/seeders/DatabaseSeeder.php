@@ -22,7 +22,9 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             ConseilsSeeder::class,
+            CategoriesSeeder::class,
             MedicamentsSeeder::class,
+            HospitalisationsSeeder::class,
         ]);
     }
 }

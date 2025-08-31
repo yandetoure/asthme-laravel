@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Medicament extends Model
 {
@@ -13,7 +13,7 @@ class Medicament extends Model
         'titre',
         'description',
         'image',
-        'categorie',
+        'categorie_id',
         'forme_pharmaceutique',
         'indications',
         'contre_indications',
@@ -33,5 +33,21 @@ class Medicament extends Model
     public function traitements()
     {
         return $this->hasMany(Traitement::class);
+    }
+
+    /**
+     * Get the prescriptions for this medicament.
+     */
+    public function prescriptions()
+    {
+        return $this->hasMany(Prescription::class);
+    }
+
+    /**
+     * Get the category for this medicament.
+     */
+    public function categorie()
+    {
+        return $this->belongsTo(Category::class, 'categorie_id');
     }
 }

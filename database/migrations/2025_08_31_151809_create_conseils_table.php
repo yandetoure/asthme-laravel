@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('conseils', function (Blueprint $table) {
+        Schema::create('advice', function (Blueprint $table) {
             $table->id();
-            $table->string('titre');
-            $table->text('contenu');
-            $table->enum('categorie', ['prevention', 'gestion_crise', 'lifestyle', 'medicaments', 'urgence'])->default('prevention');
-            $table->enum('niveau_severite', ['tous', 'leger', 'modere', 'severe'])->default('tous');
-            $table->boolean('actif')->default(true);
-            $table->integer('ordre_affichage')->default(0);
+            $table->string('title');
+            $table->text('content');
+            $table->enum('category', ['prevention', 'crisis_management', 'lifestyle', 'medications', 'emergency'])->default('prevention');
+            $table->enum('severity_level', ['all', 'mild', 'moderate', 'severe'])->default('all');
+            $table->boolean('active')->default(true);
+            $table->integer('display_order')->default(0);
             $table->string('image_url')->nullable();
             $table->timestamps();
         });
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('conseils');
+        Schema::dropIfExists('advice');
     }
 };

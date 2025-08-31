@@ -14,7 +14,7 @@ class MedicamentController extends Controller
      */
     public function index(): JsonResponse
     {
-        $medicaments = Medicament::all();
+        $medicaments = Medicament::with('categorie')->get();
         return response()->json([
             'success' => true,
             'data' => $medicaments
@@ -30,7 +30,7 @@ class MedicamentController extends Controller
             'titre' => 'required|string|max:255',
             'description' => 'required|string',
             'image' => 'nullable|string',
-            'categorie' => 'required|string|max:255',
+            'categorie_id' => 'required|exists:categories,id',
             'forme_pharmaceutique' => 'nullable|string|max:255',
             'indications' => 'nullable|string',
             'contre_indications' => 'nullable|string',
@@ -56,7 +56,7 @@ class MedicamentController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $medicament
+            'data' => $medicament->load('categorie')
         ]);
     }
 
@@ -69,7 +69,7 @@ class MedicamentController extends Controller
             'titre' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
             'image' => 'nullable|string',
-            'categorie' => 'sometimes|required|string|max:255',
+            'categorie_id' => 'sometimes|required|exists:categories,id',
             'forme_pharmaceutique' => 'nullable|string|max:255',
             'indications' => 'nullable|string',
             'contre_indications' => 'nullable|string',
@@ -106,9 +106,9 @@ class MedicamentController extends Controller
      */
     public function getByCategory(string $category): JsonResponse
     {
-        $medicaments = Medicament::where('categorie', $category)
-            ->where('disponible', true)
-            ->get();
+        $medicaments = Medicament::whereHas('categorie', function($query) use ($category) {
+            $query->where('nom', $category);
+        })->where('disponible', true)->with('categorie')->get();
 
         return response()->json([
             'success' => true,
@@ -123,11 +123,13 @@ class MedicamentController extends Controller
     {
         $query = $request->get('q');
 
-        $medicaments = Medicament::where('titre', 'like', "%{$query}%")
-            ->orWhere('description', 'like', "%{$query}%")
-            ->orWhere('categorie', 'like', "%{$query}%")
-            ->where('disponible', true)
-            ->get();
+        $medicaments = Medicament::where(function($q) use ($query) {
+            $q->where('titre', 'like', "%{$query}%")
+              ->orWhere('description', 'like', "%{$query}%")
+              ->orWhereHas('categorie', function($subQuery) use ($query) {
+                  $subQuery->where('nom', 'like', "%{$query}%");
+              });
+        })->where('disponible', true)->with('categorie')->get();
 
         return response()->json([
             'success' => true,

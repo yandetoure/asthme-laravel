@@ -11,19 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('medicaments', function (Blueprint $table) {
+        Schema::create('medications', function (Blueprint $table) {
             $table->id();
-            $table->string('titre');
+            $table->string('title');
             $table->text('description');
             $table->string('image')->nullable();
-            $table->string('categorie');
-            $table->string('forme_pharmaceutique')->nullable();
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->string('pharmaceutical_form')->nullable();
             $table->text('indications')->nullable();
-            $table->text('contre_indications')->nullable();
-            $table->text('effets_secondaires')->nullable();
-            $table->text('posologie')->nullable();
+            $table->text('contraindications')->nullable();
+            $table->text('side_effects')->nullable();
+            $table->text('dosage')->nullable();
             $table->text('interactions')->nullable();
-            $table->boolean('disponible')->default(true);
+            $table->boolean('available')->default(true);
             $table->timestamps();
         });
     }
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('medicaments');
+        Schema::dropIfExists('medications');
     }
 };

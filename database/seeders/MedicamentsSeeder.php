@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
+use App\Models\Category;
 use App\Models\Medicament;
+use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class MedicamentsSeeder extends Seeder
 {
@@ -13,12 +14,19 @@ class MedicamentsSeeder extends Seeder
      */
     public function run(): void
     {
+        // Récupérer les catégories
+        $bronchodilatateurs = Category::where('nom', 'Bronchodilatateurs')->first();
+        $traitementFond = Category::where('nom', 'Traitement de fond')->first();
+        $corticosteroides = Category::where('nom', 'Comprimés Corticoïdes')->first();
+        $antileucotrienes = Category::where('nom', 'Antileucotriènes')->first();
+        $secours = Category::where('nom', 'Traitement de secours')->first();
+
         $medicaments = [
             [
                 'titre' => 'Ventoline (Salbutamol)',
                 'description' => 'Bronchodilatateur à action rapide pour soulager les crises d\'asthme',
                 'image' => 'ventoline.jpg',
-                'categorie' => 'Bronchodilatateur',
+                'categorie_id' => $bronchodilatateurs->id,
                 'forme_pharmaceutique' => 'Aérosol doseur',
                 'indications' => 'Traitement des crises d\'asthme et prévention de l\'asthme d\'effort',
                 'contre_indications' => 'Hypersensibilité au salbutamol ou à l\'un des excipients',
@@ -31,7 +39,7 @@ class MedicamentsSeeder extends Seeder
                 'titre' => 'Symbicort (Budesonide/Formotérol)',
                 'description' => 'Association corticostéroïde et bronchodilatateur pour le traitement de fond',
                 'image' => 'symbicort.jpg',
-                'categorie' => 'Traitement de fond',
+                'categorie_id' => $traitementFond->id,
                 'forme_pharmaceutique' => 'Aérosol doseur',
                 'indications' => 'Traitement de fond de l\'asthme persistant modéré à sévère',
                 'contre_indications' => 'Hypersensibilité aux composants, infections respiratoires non contrôlées',
@@ -44,7 +52,7 @@ class MedicamentsSeeder extends Seeder
                 'titre' => 'Flixotide (Fluticasone)',
                 'description' => 'Corticostéroïde inhalé pour réduire l\'inflammation bronchique',
                 'image' => 'flixotide.jpg',
-                'categorie' => 'Corticostéroïde',
+                'categorie_id' => $corticosteroides->id,
                 'forme_pharmaceutique' => 'Aérosol doseur',
                 'indications' => 'Traitement préventif de l\'asthme persistant',
                 'contre_indications' => 'Hypersensibilité au fluticasone, infections respiratoires non traitées',
@@ -57,7 +65,7 @@ class MedicamentsSeeder extends Seeder
                 'titre' => 'Serevent (Salmétérol)',
                 'description' => 'Bronchodilatateur à longue durée d\'action pour le contrôle de l\'asthme',
                 'image' => 'serevent.jpg',
-                'categorie' => 'Bronchodilatateur longue durée',
+                'categorie_id' => $bronchodilatateurs->id,
                 'forme_pharmaceutique' => 'Aérosol doseur',
                 'indications' => 'Traitement de fond de l\'asthme persistant modéré à sévère',
                 'contre_indications' => 'Hypersensibilité au salmétérol, asthme instable',
@@ -70,7 +78,7 @@ class MedicamentsSeeder extends Seeder
                 'titre' => 'Singulair (Montélukast)',
                 'description' => 'Antileucotriène pour le traitement préventif de l\'asthme',
                 'image' => 'singulair.jpg',
-                'categorie' => 'Antileucotriène',
+                'categorie_id' => $antileucotrienes->id,
                 'forme_pharmaceutique' => 'Comprimé',
                 'indications' => 'Traitement préventif de l\'asthme persistant léger à modéré',
                 'contre_indications' => 'Hypersensibilité au montélukast',
