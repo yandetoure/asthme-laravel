@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Hospitalisation extends Model
 {
@@ -13,7 +13,7 @@ class Hospitalisation extends Model
 
     protected $fillable = [
         'crisis_id',
-        'patient_id',
+        'user_id',
         'date_debut',
         'date_fin',
         'etat',
@@ -52,9 +52,9 @@ class Hospitalisation extends Model
     /**
      * Get the patient for this hospitalisation.
      */
-    public function patient(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(User::class);
     }
 
     /**

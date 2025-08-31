@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\Traitement;
-use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 
 class TraitementController extends Controller
 {
@@ -15,7 +15,7 @@ class TraitementController extends Controller
      */
     public function index(): JsonResponse
     {
-        $traitements = Traitement::with(['patient', 'medicament'])->get();
+        $traitements = Traitement::with(['user', 'medicament'])->get();
         return response()->json([
             'success' => true,
             'data' => $traitements
@@ -28,7 +28,7 @@ class TraitementController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'patient_id' => 'required|exists:patients,id',
+            'user_id' => 'required|exists:users,id',
             'medicament_id' => 'required|exists:medicaments,id',
             'nom_medicament' => 'required|string|max:255',
             'description' => 'required|string',
@@ -47,7 +47,7 @@ class TraitementController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Traitement créé avec succès',
-            'data' => $traitement->load(['patient', 'medicament'])
+            'data' => $traitement->load(['user', 'medicament'])
         ], 201);
     }
 
@@ -58,7 +58,7 @@ class TraitementController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $traitement->load(['patient', 'medicament'])
+            'data' => $traitement->load(['user', 'medicament'])
         ]);
     }
 
@@ -68,7 +68,7 @@ class TraitementController extends Controller
     public function update(Request $request, Traitement $traitement): JsonResponse
     {
         $request->validate([
-            'patient_id' => 'sometimes|required|exists:patients,id',
+            'user_id' => 'sometimes|required|exists:users,id',
             'medicament_id' => 'sometimes|required|exists:medicaments,id',
             'nom_medicament' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
@@ -87,7 +87,7 @@ class TraitementController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Traitement mis à jour avec succès',
-            'data' => $traitement->load(['patient', 'medicament'])
+            'data' => $traitement->load(['user', 'medicament'])
         ]);
     }
 
@@ -107,9 +107,9 @@ class TraitementController extends Controller
     /**
      * Get traitements for a specific patient
      */
-    public function getPatientTraitements(Patient $patient): JsonResponse
+    public function getPatientTraitements(User $user): JsonResponse
     {
-        $traitements = $patient->traitements()->with('medicament')->get();
+        $traitements = $user->traitements()->with('medicament')->get();
 
         return response()->json([
             'success' => true,
@@ -120,9 +120,9 @@ class TraitementController extends Controller
     /**
      * Get active traitements for a patient
      */
-    public function getActiveTraitements(Patient $patient): JsonResponse
+    public function getActiveTraitements(User $user): JsonResponse
     {
-        $traitements = $patient->traitements()
+        $traitements = $user->traitements()
             ->where('actif', true)
             ->with('medicament')
             ->get();

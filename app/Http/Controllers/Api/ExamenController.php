@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\Examen;
-use App\Models\Patient;
-use App\Models\Hospitalisation;
 use Illuminate\Http\Request;
+use App\Models\Hospitalisation;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 
 class ExamenController extends Controller
 {
@@ -16,7 +16,7 @@ class ExamenController extends Controller
      */
     public function index(): JsonResponse
     {
-        $examens = Examen::with(['patient', 'hospitalisation'])->get();
+        $examens = Examen::with(['user', 'hospitalisation'])->get();
         return response()->json([
             'success' => true,
             'data' => $examens
@@ -29,7 +29,7 @@ class ExamenController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'patient_id' => 'required|exists:patients,id',
+            'user_id' => 'required|exists:users,id',
             'hospitalisation_id' => 'nullable|exists:hospitalisations,id',
             'type_examen_id' => 'required|exists:types_examens,id',
             'date_examen' => 'required|date',
@@ -50,7 +50,7 @@ class ExamenController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Examen créé avec succès',
-            'data' => $examen->load(['patient', 'hospitalisation'])
+            'data' => $examen->load(['user', 'hospitalisation'])
         ], 201);
     }
 
@@ -61,7 +61,7 @@ class ExamenController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $examen->load(['patient', 'hospitalisation', 'typeExamen'])
+            'data' => $examen->load(['user', 'hospitalisation', 'typeExamen'])
         ]);
     }
 
@@ -71,7 +71,7 @@ class ExamenController extends Controller
     public function update(Request $request, Examen $examen): JsonResponse
     {
         $request->validate([
-            'patient_id' => 'sometimes|required|exists:patients,id',
+            'user_id' => 'sometimes|required|exists:users,id',
             'hospitalisation_id' => 'nullable|exists:hospitalisations,id',
             'type_examen_id' => 'sometimes|required|exists:types_examens,id',
             'date_examen' => 'sometimes|required|date',
@@ -92,7 +92,7 @@ class ExamenController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Examen mis à jour avec succès',
-            'data' => $examen->load(['patient', 'hospitalisation'])
+            'data' => $examen->load(['user', 'hospitalisation'])
         ]);
     }
 
@@ -112,9 +112,9 @@ class ExamenController extends Controller
     /**
      * Get examens for a specific patient
      */
-    public function getPatientExamens(Patient $patient): JsonResponse
+    public function getPatientExamens(User $user): JsonResponse
     {
-        $examens = $patient->examens()
+        $examens = $user->examens()
             ->with('hospitalisation')
             ->orderBy('date_examen', 'desc')
             ->get();
@@ -131,7 +131,7 @@ class ExamenController extends Controller
     public function getHospitalisationExamens(Hospitalisation $hospitalisation): JsonResponse
     {
         $examens = $hospitalisation->examens()
-            ->with('patient')
+                            ->with('user')
             ->orderBy('date_examen', 'desc')
             ->get();
 
@@ -147,7 +147,7 @@ class ExamenController extends Controller
     public function getUrgentExamens(): JsonResponse
     {
         $examens = Examen::urgent()
-            ->with(['patient', 'hospitalisation'])
+            ->with(['user', 'hospitalisation'])
             ->orderBy('date_examen', 'asc')
             ->get();
 
@@ -163,7 +163,7 @@ class ExamenController extends Controller
     public function getPendingExamens(): JsonResponse
     {
         $examens = Examen::enAttente()
-            ->with(['patient', 'hospitalisation'])
+            ->with(['user', 'hospitalisation'])
             ->orderBy('date_examen', 'asc')
             ->get();
 
@@ -179,7 +179,7 @@ class ExamenController extends Controller
     public function getCompletedExamens(): JsonResponse
     {
         $examens = Examen::termine()
-            ->with(['patient', 'hospitalisation'])
+            ->with(['user', 'hospitalisation'])
             ->orderBy('date_resultat', 'desc')
             ->get();
 
@@ -214,7 +214,7 @@ class ExamenController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Résultats de l\'examen mis à jour avec succès',
-            'data' => $examen->load(['patient', 'hospitalisation', 'typeExamen'])
+            'data' => $examen->load(['user', 'hospitalisation', 'typeExamen'])
         ]);
     }
 
@@ -224,7 +224,7 @@ class ExamenController extends Controller
     public function getByType(string $type): JsonResponse
     {
         $examens = Examen::where('type_examen', $type)
-            ->with(['patient', 'hospitalisation'])
+            ->with(['user', 'hospitalisation'])
             ->orderBy('date_examen', 'desc')
             ->get();
 

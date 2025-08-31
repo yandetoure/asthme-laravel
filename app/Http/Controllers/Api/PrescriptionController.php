@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\Prescription;
-use App\Models\Patient;
-use App\Models\Hospitalisation;
+use App\Models\User;
 use App\Models\Medicament;
+use App\Models\Prescription;
 use Illuminate\Http\Request;
+use App\Models\Hospitalisation;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 
 class PrescriptionController extends Controller
 {
@@ -17,7 +17,7 @@ class PrescriptionController extends Controller
      */
     public function index(): JsonResponse
     {
-        $prescriptions = Prescription::with(['patient', 'hospitalisation', 'medicament'])->get();
+        $prescriptions = Prescription::with(['user', 'hospitalisation', 'medicament'])->get();
         return response()->json([
             'success' => true,
             'data' => $prescriptions
@@ -30,7 +30,7 @@ class PrescriptionController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'patient_id' => 'required|exists:patients,id',
+            'user_id' => 'required|exists:users,id',
             'hospitalisation_id' => 'nullable|exists:hospitalisations,id',
             'medicament_id' => 'nullable|exists:medicaments,id',
             'type_prescription_id' => 'required|exists:types_prescriptions,id',
@@ -55,7 +55,7 @@ class PrescriptionController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Prescription créée avec succès',
-            'data' => $prescription->load(['patient', 'hospitalisation', 'medicament', 'typePrescription'])
+            'data' => $prescription->load(['user', 'hospitalisation', 'medicament', 'typePrescription'])
         ], 201);
     }
 
@@ -66,7 +66,7 @@ class PrescriptionController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $prescription->load(['patient', 'hospitalisation', 'medicament', 'typePrescription'])
+            'data' => $prescription->load(['user', 'hospitalisation', 'medicament', 'typePrescription'])
         ]);
     }
 
@@ -76,7 +76,7 @@ class PrescriptionController extends Controller
     public function update(Request $request, Prescription $prescription): JsonResponse
     {
         $request->validate([
-            'patient_id' => 'sometimes|required|exists:patients,id',
+            'user_id' => 'sometimes|required|exists:users,id',
             'hospitalisation_id' => 'nullable|exists:hospitalisations,id',
             'medicament_id' => 'nullable|exists:medicaments,id',
             'type_prescription_id' => 'sometimes|required|exists:types_prescriptions,id',
@@ -101,7 +101,7 @@ class PrescriptionController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Prescription mise à jour avec succès',
-            'data' => $prescription->load(['patient', 'hospitalisation', 'medicament'])
+            'data' => $prescription->load(['user', 'hospitalisation', 'medicament'])
         ]);
     }
 
@@ -140,7 +140,7 @@ class PrescriptionController extends Controller
     public function getHospitalisationPrescriptions(Hospitalisation $hospitalisation): JsonResponse
     {
         $prescriptions = $hospitalisation->prescriptions()
-            ->with(['patient', 'medicament'])
+            ->with(['user', 'medicament'])
             ->orderBy('date_prescription', 'desc')
             ->get();
 
@@ -156,7 +156,7 @@ class PrescriptionController extends Controller
     public function getActivePrescriptions(): JsonResponse
     {
         $prescriptions = Prescription::active()
-            ->with(['patient', 'hospitalisation', 'medicament'])
+            ->with(['user', 'hospitalisation', 'medicament'])
             ->orderBy('date_prescription', 'desc')
             ->get();
 
@@ -172,7 +172,7 @@ class PrescriptionController extends Controller
     public function getCompletedPrescriptions(): JsonResponse
     {
         $prescriptions = Prescription::terminee()
-            ->with(['patient', 'hospitalisation', 'medicament'])
+            ->with(['user', 'hospitalisation', 'medicament'])
             ->orderBy('date_fin_traitement', 'desc')
             ->get();
 
@@ -188,7 +188,7 @@ class PrescriptionController extends Controller
     public function getByType(string $type): JsonResponse
     {
         $prescriptions = Prescription::byType($type)
-            ->with(['patient', 'hospitalisation', 'medicament'])
+            ->with(['user', 'hospitalisation', 'medicament'])
             ->orderBy('date_prescription', 'desc')
             ->get();
 
@@ -204,7 +204,7 @@ class PrescriptionController extends Controller
     public function getMedicamentPrescriptions(Medicament $medicament): JsonResponse
     {
         $prescriptions = $medicament->prescriptions()
-            ->with(['patient', 'hospitalisation'])
+            ->with(['user', 'hospitalisation'])
             ->orderBy('date_prescription', 'desc')
             ->get();
 
@@ -233,7 +233,7 @@ class PrescriptionController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Prescription suspendue avec succès',
-            'data' => $prescription->load(['patient', 'hospitalisation', 'medicament'])
+            'data' => $prescription->load(['user', 'hospitalisation', 'medicament'])
         ]);
     }
 
@@ -250,7 +250,7 @@ class PrescriptionController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Prescription réactivée avec succès',
-            'data' => $prescription->load(['patient', 'hospitalisation', 'medicament'])
+            'data' => $prescription->load(['user', 'hospitalisation', 'medicament'])
         ]);
     }
 
@@ -273,7 +273,7 @@ class PrescriptionController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Prescription terminée avec succès',
-            'data' => $prescription->load(['patient', 'hospitalisation', 'medicament'])
+            'data' => $prescription->load(['user', 'hospitalisation', 'medicament'])
         ]);
     }
 }

@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class User extends Authenticatable
 {
@@ -100,19 +100,11 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the patient's detailed information.
-     */
-    public function details(): HasOne
-    {
-        return $this->hasOne(PatientDetail::class, 'patient_id', 'id');
-    }
-
-    /**
      * Get the crises for the patient.
      */
     public function crises(): HasMany
     {
-        return $this->hasMany(Crisis::class, 'patient_id', 'id');
+        return $this->hasMany(Crisis::class, 'user_id', 'id');
     }
 
     /**
@@ -120,7 +112,7 @@ class User extends Authenticatable
      */
     public function treatments(): HasMany
     {
-        return $this->hasMany(Treatment::class, 'patient_id', 'id');
+        return $this->hasMany(Treatment::class, 'user_id', 'id');
     }
 
     /**
@@ -128,7 +120,7 @@ class User extends Authenticatable
      */
     public function hospitalizations(): HasMany
     {
-        return $this->hasMany(Hospitalization::class, 'patient_id', 'id');
+        return $this->hasMany(Hospitalization::class, 'user_id', 'id');
     }
 
     /**
@@ -136,7 +128,7 @@ class User extends Authenticatable
      */
     public function exams(): HasMany
     {
-        return $this->hasMany(Exam::class, 'patient_id', 'id');
+        return $this->hasMany(Exam::class, 'user_id', 'id');
     }
 
     /**
@@ -144,7 +136,7 @@ class User extends Authenticatable
      */
     public function prescriptions(): HasMany
     {
-        return $this->hasMany(Prescription::class, 'patient_id', 'id');
+        return $this->hasMany(Prescription::class, 'user_id', 'id');
     }
 
     /**
@@ -152,7 +144,7 @@ class User extends Authenticatable
      */
     public function lungCapacityRecords(): HasMany
     {
-        return $this->hasMany(LungCapacityRecord::class, 'patient_id', 'id');
+        return $this->hasMany(LungCapacityRecord::class, 'user_id', 'id');
     }
 
     /**

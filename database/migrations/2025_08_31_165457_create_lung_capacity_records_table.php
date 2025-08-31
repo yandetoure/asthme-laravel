@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('lung_capacity_records', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('patient_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('exam_id')->nullable()->constrained()->onDelete('cascade');
             
             // Date et contexte de la mesure
@@ -67,8 +67,8 @@ return new class extends Migration
             $table->timestamps();
             
             // Index pour optimiser les recherches
-            $table->index(['patient_id', 'measurement_date']);
-            $table->index(['patient_id', 'measurement_type']);
+                    $table->index(['user_id', 'measurement_date']);
+        $table->index(['user_id', 'measurement_type']);
             $table->index(['measurement_date', 'measurement_type']);
         });
     }

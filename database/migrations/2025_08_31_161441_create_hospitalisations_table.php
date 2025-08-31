@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('hospitalizations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('crisis_id')->constrained()->onDelete('cascade');
-            $table->foreignId('patient_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->dateTime('start_date');
             $table->dateTime('end_date')->nullable();
             $table->enum('status', ['ongoing', 'completed', 'cancelled'])->default('ongoing');

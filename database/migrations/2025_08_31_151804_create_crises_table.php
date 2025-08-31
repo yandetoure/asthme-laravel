@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('crises', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('patient_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->datetime('start_date');
             $table->datetime('end_date')->nullable();
             $table->enum('intensity', ['mild', 'moderate', 'severe'])->default('moderate');

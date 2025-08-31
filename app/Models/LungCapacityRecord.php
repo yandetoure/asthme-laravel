@@ -11,7 +11,7 @@ class LungCapacityRecord extends Model
     use HasFactory;
 
     protected $fillable = [
-        'patient_id',
+        'user_id',
         'exam_id',
         'measurement_date',
         'measurement_type',
@@ -79,9 +79,9 @@ class LungCapacityRecord extends Model
     /**
      * Get the patient that owns the record.
      */
-    public function patient(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(User::class);
     }
 
     /**

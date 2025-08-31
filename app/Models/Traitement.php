@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Traitement extends Model
 {
     protected $fillable = [
-        'patient_id',
+        'user_id',
         'medicament_id',
         'nom_medicament',
         'description',
@@ -28,9 +28,9 @@ class Traitement extends Model
         'actif' => 'boolean',
     ];
 
-    public function patient(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(User::class);
     }
 
     public function medicament(): BelongsTo

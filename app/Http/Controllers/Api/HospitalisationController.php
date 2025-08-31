@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\Hospitalisation;
+use App\Models\User;
 use App\Models\Crisis;
-use App\Models\Patient;
 use Illuminate\Http\Request;
+use App\Models\Hospitalisation;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 
 class HospitalisationController extends Controller
 {
@@ -16,7 +16,7 @@ class HospitalisationController extends Controller
      */
     public function index(): JsonResponse
     {
-        $hospitalisations = Hospitalisation::with(['patient', 'crisis'])->get();
+        $hospitalisations = Hospitalisation::with(['user', 'crisis'])->get();
         return response()->json([
             'success' => true,
             'data' => $hospitalisations
@@ -30,7 +30,7 @@ class HospitalisationController extends Controller
     {
         $request->validate([
             'crisis_id' => 'required|exists:crises,id',
-            'patient_id' => 'required|exists:patients,id',
+            'user_id' => 'required|exists:users,id',
             'date_debut' => 'required|date',
             'date_fin' => 'nullable|date|after:date_debut',
             'etat' => 'required|in:en_cours,terminee,annulee',
@@ -56,7 +56,7 @@ class HospitalisationController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Hospitalisation créée avec succès',
-            'data' => $hospitalisation->load(['patient', 'crisis'])
+            'data' => $hospitalisation->load(['user', 'crisis'])
         ], 201);
     }
 
@@ -67,7 +67,7 @@ class HospitalisationController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $hospitalisation->load(['patient', 'crisis'])
+            'data' => $hospitalisation->load(['user', 'crisis'])
         ]);
     }
 
@@ -78,7 +78,7 @@ class HospitalisationController extends Controller
     {
         $request->validate([
             'crisis_id' => 'sometimes|required|exists:crises,id',
-            'patient_id' => 'sometimes|required|exists:patients,id',
+            'user_id' => 'sometimes|required|exists:users,id',
             'date_debut' => 'sometimes|required|date',
             'date_fin' => 'nullable|date|after:date_debut',
             'etat' => 'sometimes|required|in:en_cours,terminee,annulee',
@@ -104,7 +104,7 @@ class HospitalisationController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Hospitalisation mise à jour avec succès',
-            'data' => $hospitalisation->load(['patient', 'crisis'])
+            'data' => $hospitalisation->load(['user', 'crisis'])
         ]);
     }
 
@@ -126,7 +126,7 @@ class HospitalisationController extends Controller
      */
     public function getCrisisHospitalisations(Crisis $crisis): JsonResponse
     {
-        $hospitalisations = $crisis->hospitalisations()->with('patient')->get();
+        $hospitalisations = $crisis->hospitalisations()->with('user')->get();
 
         return response()->json([
             'success' => true,
@@ -156,7 +156,7 @@ class HospitalisationController extends Controller
     public function getActiveHospitalisations(): JsonResponse
     {
         $hospitalisations = Hospitalisation::enCours()
-            ->with(['patient', 'crisis'])
+            ->with(['user', 'crisis'])
             ->orderBy('date_debut', 'desc')
             ->get();
 
@@ -172,7 +172,7 @@ class HospitalisationController extends Controller
     public function getCompletedHospitalisations(): JsonResponse
     {
         $hospitalisations = Hospitalisation::terminees()
-            ->with(['patient', 'crisis'])
+            ->with(['user', 'crisis'])
             ->orderBy('date_fin', 'desc')
             ->get();
 
@@ -204,7 +204,7 @@ class HospitalisationController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Hospitalisation terminée avec succès',
-            'data' => $hospitalisation->load(['patient', 'crisis'])
+            'data' => $hospitalisation->load(['user', 'crisis'])
         ]);
     }
 
@@ -214,7 +214,7 @@ class HospitalisationController extends Controller
     public function getBySeverity(string $severity): JsonResponse
     {
         $hospitalisations = Hospitalisation::where('gravite', $severity)
-            ->with(['patient', 'crisis'])
+            ->with(['user', 'crisis'])
             ->orderBy('date_debut', 'desc')
             ->get();
 

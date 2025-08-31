@@ -13,7 +13,7 @@ class Crisis extends Model
     use HasFactory;
 
     protected $fillable = [
-        'patient_id',
+        'user_id',
         'start_date',
         'end_date',
         'intensity',
@@ -31,11 +31,11 @@ class Crisis extends Model
     ];
 
     /**
-     * Get the patient that owns the crisis.
+     * Get the user that owns the crisis.
      */
-    public function patient(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(User::class);
     }
 
     /**

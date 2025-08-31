@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
     /**
-     * Register a new user with phone and PIN
+     * Register a new patient with phone and PIN
      */
     public function register(Request $request): JsonResponse
     {
@@ -24,20 +24,24 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'last_name' => 'nullable|string|max:255',
             'email' => 'nullable|email|unique:users,email',
-            'birth_date' => 'nullable|date|before:today',
             'gender' => 'nullable|in:male,female,other',
-            'height' => 'nullable|numeric|min:50|max:250',
-            'weight' => 'nullable|numeric|min:10|max:300',
-            'blood_type' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
+            'birth_date' => 'nullable|date',
+            'height' => 'nullable|numeric|min:50|max:300',
+            'weight' => 'nullable|numeric|min:10|max:500',
+            'blood_type' => 'nullable|string|max:10',
+            'medical_history' => 'nullable|string',
+            'allergies' => 'nullable|string',
+            'attending_doctor' => 'nullable|string|max:255',
+            'current_treatments' => 'nullable|string',
             'asthma_severity' => 'nullable|in:mild,moderate,severe',
+            'medical_notes' => 'nullable|string',
             'emergency_contact_name' => 'nullable|string|max:255',
-            'emergency_contact_phone' => 'nullable|string|regex:/^[0-9+\-\s()]+$/',
-            'emergency_contact_relationship' => 'nullable|string|max:255',
+            'emergency_contact_phone' => 'nullable|string|max:20',
+            'emergency_contact_relationship' => 'nullable|string|max:100',
             'emergency_hospital' => 'nullable|string|max:255',
             'asthma_follow_up_hospital' => 'nullable|string|max:255',
-            'attending_doctor' => 'nullable|string|max:255',
             'asthma_specialist' => 'nullable|string|max:255',
-            'insurance_number' => 'nullable|string|max:255'
+            'insurance_number' => 'nullable|string|max:100',
         ], [
             'phone.required' => 'Le numéro de téléphone est requis.',
             'phone.unique' => 'Ce numéro de téléphone est déjà utilisé.',
@@ -47,12 +51,12 @@ class AuthController extends Controller
             'pin.regex' => 'Le code PIN ne doit contenir que des chiffres.',
             'name.required' => 'Le prénom est requis.',
             'email.unique' => 'Cette adresse email est déjà utilisée.',
-            'birth_date.before' => 'La date de naissance doit être antérieure à aujourd\'hui.',
+            'gender.in' => 'Le genre doit être male, female ou other.',
+            'asthma_severity.in' => 'La sévérité de l\'asthme doit être mild, moderate ou severe.',
             'height.min' => 'La taille doit être d\'au moins 50 cm.',
-            'height.max' => 'La taille ne peut pas dépasser 250 cm.',
+            'height.max' => 'La taille ne peut pas dépasser 300 cm.',
             'weight.min' => 'Le poids doit être d\'au moins 10 kg.',
-            'weight.max' => 'Le poids ne peut pas dépasser 300 kg.',
-            'emergency_contact_phone.regex' => 'Le format du numéro de téléphone d\'urgence est invalide.'
+            'weight.max' => 'Le poids ne peut pas dépasser 500 kg.',
         ]);
 
         if ($validator->fails()) {
@@ -65,19 +69,41 @@ class AuthController extends Controller
 
         // Créer l'utilisateur avec toutes les informations patient
         $userData = $request->only([
-            'name', 'last_name', 'email', 'phone', 'birth_date', 'gender',
+            'name', 'last_name', 'email', 'phone', 'gender', 'birth_date',
             'height', 'weight', 'blood_type', 'asthma_severity',
+            'medical_history', 'allergies', 'attending_doctor', 'current_treatments', 'medical_notes',
             'emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relationship',
-            'emergency_hospital', 'asthma_follow_up_hospital', 'attending_doctor', 'asthma_specialist',
+            'emergency_hospital', 'asthma_follow_up_hospital', 'asthma_specialist',
             'insurance_number'
         ]);
 
+        // Données de sécurité et d'authentification
         $userData['pin'] = Hash::make($request->pin);
         $userData['phone_verified'] = false;
         $userData['pin_created_at'] = now();
         $userData['registration_date'] = now();
         $userData['is_active_patient'] = true;
         $userData['password'] = Hash::make(Str::random(16)); // Mot de passe aléatoire pour compatibilité
+        $userData['login_attempts'] = 0;
+        $userData['locked_until'] = null;
+
+        // Valeurs par défaut pour les champs optionnels
+        $userData['asthma_severity'] = $userData['asthma_severity'] ?? 'moderate';
+        $userData['asthma_triggers'] = null;
+        $userData['current_medications'] = null;
+        $userData['dosage_instructions'] = null;
+        $userData['family_history'] = null;
+        $userData['lifestyle_factors'] = null;
+        $userData['inhaler_technique_notes'] = null;
+        $userData['uses_peak_flow_meter'] = false;
+        $userData['has_action_plan'] = false;
+        $userData['peak_flow_baseline'] = null;
+        $userData['emergency_hospital_phone'] = null;
+        $userData['asthma_follow_up_hospital_phone'] = null;
+        $userData['hospital_notes'] = null;
+        $userData['attending_doctor_phone'] = null;
+        $userData['asthma_specialist_phone'] = null;
+        $userData['special_instructions'] = null;
 
         $user = User::create($userData);
 
@@ -95,11 +121,13 @@ class AuthController extends Controller
                     'full_name' => $user->full_name,
                     'phone' => $user->phone,
                     'email' => $user->email,
+                    'gender' => $user->gender,
                     'birth_date' => $user->birth_date,
                     'age' => $user->age,
                     'asthma_severity' => $user->asthma_severity,
                     'phone_verified' => $user->phone_verified,
-                    'registration_date' => $user->registration_date
+                    'registration_date' => $user->registration_date,
+                    'is_active_patient' => $user->is_active_patient
                 ],
                 'token' => $token,
                 'token_type' => 'Bearer'

@@ -11,7 +11,7 @@ class Prescription extends Model
     use HasFactory;
 
     protected $fillable = [
-        'patient_id',
+        'user_id',
         'hospitalisation_id',
         'medicament_id',
         'type_prescription_id',
@@ -44,9 +44,9 @@ class Prescription extends Model
     /**
      * Get the patient for this prescription.
      */
-    public function patient(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(User::class);
     }
 
     /**
